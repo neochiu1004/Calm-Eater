@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="zh-TW"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="大餐記錄器">
+<meta name="theme-color" content="#3b82f6">
+<link rel="apple-touch-icon" href="https://lh3.googleusercontent.com/aida-public/AB6AXuDWU3YWOZtS24ARubGFDrBICBqnQoQnKy56zBFXnoMi5tq5qGReqMy4ZOJYI7tldo3VNAyB1R78qQR71ZKQb6BGilN5xOoaXRYsDs3BjrJSxmS2DrjFRZ0j-fQAQ3RjL1dfpPr17X-9ysHPYeM6gHw1tjkv1rsZYb7URKyjWAvSqycJ-bG3XMM98GdEpg2fGUtOghg0n1Lrq5DnbUJPcy8A23bEs-MM4iBCKoWRw0pAKl1EIZP6VnNIx7VA6DYcvxZMlf90RU-X4h4">
+<link rel="manifest" href='data:application/manifest+json,{"name":"大餐記錄器","short_name":"大餐","start_url":".","display":"standalone","background_color":"#f0f9ff","theme_color":"#3b82f6"}'>
+
+<title>Diet Patience</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#3b82f6", "primary-hover": "#2563eb", "secondary": "#0ea5e9",
+                        "accent": "#f59e0b", "bg-page": "#f0f9ff", "surface": "#ffffff",
+                        "text-main": "#0f172a", "text-light": "#64748b"
+                    },
+                    fontFamily: { "display": ["Manrope", "Noto Sans", "sans-serif"] },
+                    boxShadow: { 'soft-blue': '0 10px 40px -10px rgba(59, 130, 246, 0.1)', 'glow': '0 0 15px rgba(59, 130, 246, 0.3)' }
+                },
+            },
+        }
+    </script>
+<style>
+        body { min-height: 100dvh; -webkit-tap-highlight-color: transparent; }
+        ::-webkit-scrollbar { width: 0px; background: transparent; }
+        .material-symbols-outlined.filled { font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 24 }
+        #body-bg-layer { position: fixed; inset: 0; z-index: -1; background-size: cover; background-position: center; pointer-events: none; transition: all 0.5s ease; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .hero-bg { position: absolute; inset: 0; background-repeat: no-repeat; transition: all 0.3s ease; }
+        .modal-overlay { background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); }
+    </style>
+  </head>
+<body class="bg-bg-page font-display antialiased text-text-main">
+<div id="body-bg-layer"></div>
+<div class="relative flex h-full min-h-screen w-full flex-col overflow-x-hidden max-w-md mx-auto bg-white/90 shadow-2xl">
+<header class="sticky top-0 z-50 flex items-center bg-white/90 backdrop-blur-md px-4 py-3 justify-between border-b border-blue-100">
+<div class="w-8"></div>
+<h2 id="header-title" class="text-text-main text-lg font-bold flex-1 text-center">Diet Patience</h2>
+<div class="w-8 flex justify-end">
+<button onclick="switchTab('settings')" class="text-text-light hover:text-primary transition-colors p-1 rounded-full hover:bg-blue-50">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+</header>
+
+<div class="flex-1 overflow-y-auto pb-28">
+    <!-- View: Home -->
+    <div id="view-home" class="p-4 pt-5 space-y-8">
+        <!-- Big Meal Section -->
+        <section class="space-y-4">
+            <h3 class="text-xs font-black text-primary uppercase tracking-widest pl-1">大餐儀表板</h3>
+            <div class="flex flex-col rounded-2xl shadow-soft-blue bg-white overflow-hidden border border-blue-50 relative">
+                <div id="hero-bg-big" class="hero-bg" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDWU3YWOZtS24ARubGFDrBICBqnQoQnKy56zBFXnoMi5tq5qGReqMy4ZOJYI7tldo3VNAyB1R78qQR71ZKQb6BGilN5xOoaXRYsDs3BjrJSxmS2DrjFRZ0j-fQAQ3RjL1dfpPr17X-9ysHPYeM6gHw1tjkv1rsZYb7URKyjWAvSqycJ-bG3XMM98GdEpg2fGUtOghg0n1Lrq5DnbUJPcy8A23bEs-MM4iBCKoWRw0pAKl1EIZP6VnNIx7VA6DYcvxZMlf90RU-X4h4"); background-size: cover; background-position: center;'></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-blue-900 via-blue-900/40 to-transparent"></div>
+                <div class="relative p-5 text-white mt-24">
+                    <div class="flex justify-between items-end">
+                        <div>
+                            <p id="display-duration-big" class="text-3xl font-black">--</p>
+                            <p class="text-[10px] text-blue-100 mt-1">距離上次大餐 <span id="display-tag-big" class="bg-green-500 px-1 rounded">計時中</span></p>
+                        </div>
+                        <span id="display-stars-big" class="bg-amber-400 text-blue-900 px-2 py-1 rounded-full text-xs font-black shadow-lg">0 ★</span>
+                    </div>
+                </div>
+                <div class="bg-white p-4 space-y-3 relative z-10">
+                    <div class="grid grid-cols-2 gap-2 text-center">
+                        <div class="p-2 bg-slate-50 rounded-xl border border-slate-100">
+                            <p class="text-[9px] font-bold text-slate-400 uppercase">上次金額</p>
+                            <p id="display-cost-big" class="text-sm font-bold text-blue-900">NT$ 0</p>
+                        </div>
+                        <div class="p-2 bg-slate-50 rounded-xl border border-slate-100">
+                            <p class="text-[9px] font-bold text-slate-400 uppercase">當前狀態</p>
+                            <div id="display-status-big" class="text-[11px] font-bold flex items-center justify-center gap-1">等待中</div>
+                        </div>
+                    </div>
+                    <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                        <div id="display-progress-bar-big" class="bg-primary h-full transition-all duration-700" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+            <div id="interval-container-big" class="flex gap-2 overflow-x-auto no-scrollbar pb-1"></div>
+            <form class="bg-white p-4 rounded-2xl border border-blue-50 shadow-sm space-y-2">
+                <input id="input-big-name" class="w-full bg-slate-50 border-slate-200 rounded-lg text-xs" placeholder="大餐名稱 (例如: 和牛燒肉)"/>
+                <div class="flex gap-2 text-xs">
+                    <input id="input-big-date" class="flex-1 bg-slate-50 border-slate-200 rounded-lg p-2" type="date"/>
+                    <input id="input-big-time" class="w-24 bg-slate-50 border-slate-200 rounded-lg p-2" type="time"/>
+                </div>
+                <div class="flex gap-2">
+                    <input id="input-big-price" class="flex-1 bg-slate-50 border-slate-200 rounded-lg text-sm font-bold" placeholder="金額 NT$" type="number"/>
+                    <button id="btn-big-submit" class="bg-primary text-white px-5 rounded-lg text-xs font-bold">記錄</button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Small Meal Section -->
+        <section class="space-y-4">
+            <h3 class="text-xs font-black text-teal-600 uppercase tracking-widest pl-1">小餐儀表板</h3>
+            <div class="flex flex-col rounded-2xl shadow-soft-blue bg-white overflow-hidden border border-teal-50 relative">
+                <div id="hero-bg-small" class="hero-bg" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDWU3YWOZtS24ARubGFDrBICBqnQoQnKy56zBFXnoMi5tq5qGReqMy4ZOJYI7tldo3VNAyB1R78qQR71ZKQb6BGilN5xOoaXRYsDs3BjrJSxmS2DrjFRZ0j-fQAQ3RjL1dfpPr17X-9ysHPYeM6gHw1tjkv1rsZYb7URKyjWAvSqycJ-bG3XMM98GdEpg2fGUtOghg0n1Lrq5DnbUJPcy8A23bEs-MM4iBCKoWRw0pAKl1EIZP6VnNIx7VA6DYcvxZMlf90RU-X4h4"); background-size: cover; background-position: center; filter: hue-rotate(140deg);'></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-teal-900 via-teal-900/40 to-transparent"></div>
+                <div class="relative p-5 text-white mt-20">
+                    <div class="flex justify-between items-end">
+                        <div>
+                            <p id="display-duration-small" class="text-2xl font-black">--</p>
+                            <p class="text-[10px] text-teal-100 mt-1">距離上次小餐 <span id="display-tag-small" class="bg-cyan-500 px-1 rounded">計時中</span></p>
+                        </div>
+                        <span id="display-stars-small" class="bg-cyan-400 text-teal-900 px-2 py-1 rounded-full text-xs font-black">0 ★</span>
+                    </div>
+                </div>
+                <div class="bg-white p-4 space-y-3 relative z-10">
+                    <div class="grid grid-cols-2 gap-2 text-center">
+                        <div class="p-2 bg-slate-50 rounded-xl border border-slate-100">
+                            <p class="text-[9px] font-bold text-slate-400 uppercase">本次金額</p>
+                            <p id="display-cost-small" class="text-sm font-bold text-teal-700">NT$ 0</p>
+                        </div>
+                        <div class="p-2 bg-slate-50 rounded-xl border border-slate-100 text-center">
+                            <p class="text-[9px] font-bold text-slate-400 uppercase">當前狀態</p>
+                            <div id="display-status-small" class="text-[11px] font-bold flex items-center justify-center gap-1">等待中</div>
+                        </div>
+                    </div>
+                    <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                        <div id="display-progress-bar-small" class="bg-teal-500 h-full transition-all duration-700" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+            <div id="interval-container-small" class="flex gap-2 overflow-x-auto no-scrollbar pb-1"></div>
+            <form class="bg-white p-4 rounded-2xl border border-teal-50 shadow-sm space-y-2">
+                <input id="input-small-name" class="w-full bg-slate-50 border-slate-200 rounded-lg text-xs" placeholder="小餐名稱 (例如: 手搖飲)"/>
+                <div class="flex gap-2 text-xs">
+                    <input id="input-small-date" class="flex-1 bg-slate-50 border-slate-200 rounded-lg p-2" type="date"/>
+                    <input id="input-small-time" class="w-24 bg-slate-50 border-slate-200 rounded-lg p-2" type="time"/>
+                </div>
+                <div class="flex gap-2">
+                    <input id="input-small-price" class="flex-1 bg-slate-50 border-slate-200 rounded-lg text-sm font-bold" placeholder="金額 NT$" type="number"/>
+                    <button id="btn-small-submit" class="bg-teal-500 text-white px-5 rounded-lg text-xs font-bold">記錄</button>
+                </div>
+            </form>
+        </section>
+    </div>
+
+    <!-- View: History -->
+    <div id="view-history" class="p-4 hidden space-y-6">
+        <div><h3 class="text-xs font-black text-slate-400 uppercase mb-3">大餐歷史</h3><div id="history-list-big" class="space-y-2"></div></div>
+        <div><h3 class="text-xs font-black text-slate-400 uppercase mb-3">小餐歷史</h3><div id="history-list-small" class="space-y-2"></div></div>
+    </div>
+
+    <!-- View: Awards -->
+    <div id="view-awards" class="p-4 hidden space-y-6">
+        <div id="awards-grid" class="grid grid-cols-2 gap-3"></div>
+        <div class="bg-white p-4 rounded-2xl border border-slate-100 space-y-3">
+            <h4 id="award-edit-title-label" class="text-xs font-black text-slate-400 uppercase">新增成就</h4>
+            <input id="award-new-title" class="w-full bg-slate-50 border-slate-200 rounded-lg text-xs" placeholder="成就名稱"/>
+            <div class="grid grid-cols-2 gap-2">
+                <select id="award-new-type" class="bg-slate-50 border-slate-200 rounded-lg text-xs">
+                    <option value="stars">大餐連擊數</option>
+                    <option value="smallStars">小餐連擊數</option>
+                    <option value="historyCount">大餐總次數</option>
+                    <option value="smallCount">小餐總次數</option>
+                </select>
+                <input id="award-new-target" type="number" class="bg-slate-50 border-slate-200 rounded-lg text-xs" placeholder="目標數值"/>
+            </div>
+            <div class="flex gap-2">
+                <button id="award-btn-save" onclick="addCustomAward()" class="flex-1 bg-primary text-white font-bold py-2 rounded-lg text-xs">+ 儲存成就</button>
+                <button id="award-btn-cancel" onclick="cancelAwardEdit()" class="hidden flex-1 bg-slate-100 text-slate-500 font-bold py-2 rounded-lg text-xs">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- View: Stats -->
+    <div id="view-stats" class="p-4 hidden space-y-4">
+        <h3 class="text-xs font-black text-slate-400 uppercase mb-2">支出分析</h3>
+        <div id="stats-summary" class="space-y-3"></div>
+    </div>
+
+    <!-- View: Settings -->
+    <div id="view-settings" class="p-4 hidden space-y-6 pb-24">
+        <section class="space-y-4">
+            <div class="flex justify-between items-center px-1">
+                <h4 class="text-xs font-bold text-slate-400 uppercase">系統設定</h4>
+                <button onclick="switchTab('home')" class="text-slate-400 hover:text-primary"><span class="material-symbols-outlined text-sm">close</span></button>
+            </div>
+
+            <div class="bg-white p-4 rounded-2xl border border-slate-100 space-y-4">
+                <h5 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">個性化主題</h5>
+                <div class="space-y-4">
+                    <!-- Motivation Image -->
+                    <div class="space-y-2">
+                        <label class="text-[10px] text-slate-400">冷靜期激勵圖片 (彈窗顯示)</label>
+                        <input type="file" id="motivation-img-file" class="hidden" onchange="handleFileUpload(event, 'motivation')"/>
+                        <button onclick="document.getElementById('motivation-img-file').click()" class="w-full bg-orange-50 text-orange-600 py-2 rounded-lg font-bold text-xs">選擇激勵圖片</button>
+                        <div id="motivation-img-preview" class="w-full h-24 bg-slate-50 rounded-xl bg-contain bg-center bg-no-repeat border border-slate-200"></div>
+                    </div>
+                    <!-- Body BG -->
+                    <div class="space-y-2">
+                        <label class="text-[10px] text-slate-400">主體背景圖片</label>
+                        <input type="file" id="body-bg-file" class="hidden" onchange="handleFileUpload(event, 'bodyBg')"/>
+                        <button onclick="document.getElementById('body-bg-file').click()" class="w-full bg-slate-100 text-slate-600 py-2 rounded-lg font-bold text-xs">選擇背景圖片</button>
+                        <div class="grid grid-cols-2 gap-2 mt-1">
+                            <div class="flex flex-col gap-1">
+                                <div class="flex justify-between text-[9px] text-slate-400"><span>背景透明度</span><span id="val-body-op">10</span>%</div>
+                                <input id="set-body-op" type="range" class="w-full h-1" oninput="liveUpdateBody()"/>
+                            </div>
+                            <div class="flex flex-col gap-1">
+                                <div class="flex justify-between text-[9px] text-slate-400"><span>背景縮放</span><span id="val-body-sc">100</span>%</div>
+                                <input id="set-body-sc" type="range" min="50" max="200" class="w-full h-1" oninput="liveUpdateBody()"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-4 rounded-2xl border border-slate-100 space-y-4">
+                <h5 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">大餐看板外觀</h5>
+                <input type="file" id="hero-big-file" class="hidden" onchange="handleFileUpload(event, 'heroBig')"/>
+                <button onclick="document.getElementById('hero-big-file').click()" class="w-full bg-blue-50 text-blue-600 py-2 rounded-lg font-bold text-xs">更換大餐看板圖片</button>
+                <div class="space-y-3 pt-2">
+                    <div class="flex flex-col gap-1">
+                        <div class="flex justify-between text-[10px] text-slate-400"><span>垂直位移</span><span id="val-hb-y">50</span>%</div>
+                        <input id="set-hb-y" type="range" class="w-full h-1" oninput="liveUpdateHero('big')"/>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <div class="flex justify-between text-[10px] text-slate-400"><span>縮放比例</span><span id="val-hb-sc">100</span>%</div>
+                        <input id="set-hb-sc" type="range" min="50" max="250" class="w-full h-1" oninput="liveUpdateHero('big')"/>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <div class="flex justify-between text-[10px] text-slate-400"><span>圖片不透明度</span><span id="val-hb-op">100</span>%</div>
+                        <input id="set-hb-op" type="range" class="w-full h-1" oninput="liveUpdateHero('big')"/>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-4 rounded-2xl border border-slate-100 space-y-4">
+                <h5 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">天數選項清單 (以逗號隔開)</h5>
+                <div class="space-y-3">
+                    <input id="set-big-opts" class="w-full bg-slate-50 border-slate-200 rounded-lg text-xs p-3" placeholder="大餐天數, 如: 3,7,14,30"/>
+                    <input id="set-small-opts" class="w-full bg-slate-50 border-slate-200 rounded-lg text-xs p-3" placeholder="小餐天數, 如: 1,3,7"/>
+                </div>
+            </div>
+
+            <button onclick="saveSettings()" class="w-full bg-primary text-white font-bold py-3 rounded-xl shadow-lg active:scale-95 transition-transform">儲存並返回首頁</button>
+        </section>
+    </div>
+</div>
+
+<!-- Warning Modal -->
+<div id="warning-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-6">
+    <div class="modal-overlay absolute inset-0" onclick="closeModal()"></div>
+    <div class="relative bg-white w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl flex flex-col items-center p-6 space-y-5 animate-in fade-in zoom-in duration-300">
+        <h3 class="text-lg font-black text-red-600">目前仍處於冷靜期！</h3>
+        <div id="modal-motivate-img" class="w-full aspect-video bg-slate-100 rounded-2xl bg-cover bg-center shadow-inner border border-slate-100"></div>
+        <div class="text-center">
+            <p class="text-xs text-slate-500 leading-relaxed font-medium">現在記錄大餐會打破連擊紀錄。<br>為了夢想，再忍耐一下吧！</p>
+        </div>
+        <div class="flex flex-col gap-2 w-full">
+            <button onclick="closeModal()" class="w-full bg-primary text-white font-bold py-3 rounded-xl shadow-md">我會繼續忍耐</button>
+            <button onclick="confirmMealBreak()" class="w-full text-slate-400 font-bold py-2 text-xs">我決定放棄連擊</button>
+        </div>
+    </div>
+</div>
+
+<div class="fixed bottom-0 w-full max-w-md bg-white/95 backdrop-blur-md border-t border-blue-100 flex justify-around items-center h-16 pb-safe">
+    <button onclick="switchTab('home')" class="nav-btn flex flex-col items-center text-primary" data-tab="home"><span class="material-symbols-outlined">home</span><span class="text-[10px] font-bold">首頁</span></button>
+    <button onclick="switchTab('history')" class="nav-btn flex flex-col items-center text-slate-400" data-tab="history"><span class="material-symbols-outlined">history</span><span class="text-[10px] font-bold">歷史</span></button>
+    <button onclick="switchTab('awards')" class="nav-btn flex flex-col items-center text-slate-400" data-tab="awards"><span class="material-symbols-outlined">emoji_events</span><span class="text-[10px] font-bold">成就</span></button>
+    <button onclick="switchTab('stats')" class="nav-btn flex flex-col items-center text-slate-400" data-tab="stats"><span class="material-symbols-outlined">analytics</span><span class="text-[10px] font-bold">統計</span></button>
+</div>
+</div>
+
+<script>
+    const DB_NAME = 'MEAT_TRACKER_DB_V4_1', DB_VER = 1, STORE_NAME = 'app_state';
+    function openDB() {
+        return new Promise((resolve, reject) => {
+            const req = indexedDB.open(DB_NAME, DB_VER);
+            req.onupgradeneeded = (e) => e.target.result.createObjectStore(STORE_NAME);
+            req.onsuccess = (e) => resolve(e.target.result);
+            req.onerror = (e) => reject(e.target.error);
+        });
+    }
+    async function dbSet(key, val) {
+        try {
+            const db = await openDB();
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(STORE_NAME, 'readwrite');
+                tx.objectStore(STORE_NAME).put(val, key);
+                tx.oncomplete = () => resolve();
+                tx.onerror = () => reject(tx.error);
+            });
+        } catch(e) { console.error("DB Error", e); }
+    }
+    async function dbGet(key) {
+        try {
+            const db = await openDB();
+            return new Promise((resolve) => {
+                const tx = db.transaction(STORE_NAME, 'readonly');
+                const req = tx.objectStore(STORE_NAME).get(key);
+                req.onsuccess = () => resolve(req.result);
+                req.onerror = () => resolve(null);
+            });
+        } catch(e) { return null; }
+    }
+
+    const DEFAULT_AWARDS = [
+        { id: 1, title: '忍耐新手', type: 'historyCount', target: 1, desc: '大餐記錄次數達 1 次', icon: 'restaurant' },
+        { id: 2, title: '連擊大師', type: 'stars', target: 3, desc: '大餐連續達成目標 3 次', icon: 'stars' },
+        { id: 3, title: '小餐之星', type: 'smallStars', target: 3, desc: '小餐連續達成目標 3 次', icon: 'coffee' }
+    ];
+
+    let state = {
+        lastMeal: null, goalDays: 7, stars: 0, history: [],
+        lastSmallMeal: null, smallGoalDays: 3, smallStars: 0, smallMeals: [],
+        bigIntervals: [3, 7, 14, 30], smallIntervals: [1, 3, 7],
+        awards: JSON.parse(JSON.stringify(DEFAULT_AWARDS)),
+        theme: {
+            heroBig: { img: "", op: 100, sc: 100, y: 50 },
+            heroSmall: { img: "", op: 60, sc: 100, y: 50 },
+            bodyBg: { img: "", op: 10, sc: 100 },
+            motivationImg: ""
+        }
+    };
+
+    let currentPendingMeal = null;
+    let editingAwardId = null;
+
+    async function init() {
+        const saved = await dbGet('MAIN_STATE');
+        if (saved) {
+            state = { ...state, ...saved };
+        }
+        
+        const now = new Date();
+        const dStr = now.toISOString().split('T')[0], tStr = now.toTimeString().slice(0, 5);
+        ['big', 'small'].forEach(t => { 
+            const dEl = document.getElementById(`input-${t}-date`), tEl = document.getElementById(`input-${t}-time`);
+            if(dEl) dEl.value = dStr; if(tEl) tEl.value = tStr;
+        });
+        
+        document.getElementById('btn-big-submit').onclick = () => tryAddMeal('big');
+        document.getElementById('btn-small-submit').onclick = () => tryAddMeal('small');
+        
+        renderIntervals(); applyTheme();
+        setInterval(updateDashboard, 1000); updateDashboard();
+    }
+
+    async function save() { await dbSet('MAIN_STATE', JSON.parse(JSON.stringify(state))); }
+
+    function renderIntervals() {
+        const gen = (t, l, g) => {
+            const el = document.getElementById(`interval-container-${t}`);
+            if(el) el.innerHTML = l.map(v => `
+            <button onclick="setGoal('${t}', ${v})" class="flex-none px-4 py-1 rounded-full border text-[10px] font-bold ${g === v ? 'bg-primary text-white border-primary shadow-sm' : 'bg-white text-slate-400 border-slate-100'}">${v}天</button>`).join('');
+        };
+        gen('big', state.bigIntervals, state.goalDays); gen('small', state.smallIntervals, state.smallGoalDays);
+    }
+
+    function setGoal(t, d) { if(t==='big') state.goalDays=d; else state.smallGoalDays=d; save(); renderIntervals(); updateDashboard(); }
+
+    function tryAddMeal(t) {
+        const nEl = document.getElementById(`input-${t}-name`), dEl = document.getElementById(`input-${t}-date`), tiEl = document.getElementById(`input-${t}-time`), pEl = document.getElementById(`input-${t}-price`);
+        const n = (nEl && nEl.value) || (t==='big'?'大餐':'小餐');
+        const d = dEl ? dEl.value : '', ti = tiEl ? tiEl.value : '', p = (pEl && parseInt(pEl.value)) || 0;
+        if (!d || !ti) return;
+        const ts = new Date(`${d}T${ti}`).getTime(), now = Date.now();
+        
+        currentPendingMeal = { type: t, name: n, timestamp: ts, price: p };
+        const last = t === 'big' ? state.lastMeal : state.lastSmallMeal;
+        const target = (t === 'big' ? state.goalDays : state.smallGoalDays) * 86400000;
+        
+        if (last && (now - last.timestamp < target)) {
+            showModal();
+        } else {
+            confirmMealBreak();
+        }
+    }
+
+    function confirmMealBreak() {
+        if(!currentPendingMeal) return;
+        const t = currentPendingMeal.type, n = currentPendingMeal.name, ts = currentPendingMeal.timestamp, p = currentPendingMeal.price, now = Date.now();
+        if (t === 'big') {
+            state.stars = (state.lastMeal && now - state.lastMeal.timestamp >= state.goalDays * 86400000) ? state.stars + 1 : 0;
+            state.lastMeal = { timestamp: ts, price: p, name: n };
+            state.history.unshift({ timestamp: ts, price: p, name: n });
+        } else {
+            state.smallStars = (state.lastSmallMeal && now - state.lastSmallMeal.timestamp >= state.smallGoalDays * 86400000) ? state.smallStars + 1 : 0;
+            state.lastSmallMeal = { timestamp: ts, price: p, name: n };
+            state.smallMeals.unshift({ timestamp: ts, price: p, name: n });
+        }
+        save(); updateDashboard(); closeModal();
+        const pEl = document.getElementById(`input-${t}-price`), nEl = document.getElementById(`input-${t}-name`);
+        if(pEl) pEl.value = ""; if(nEl) nEl.value = "";
+    }
+
+    function showModal() {
+        const modal = document.getElementById('warning-modal');
+        const img = document.getElementById('modal-motivate-img');
+        if (state.theme.motivationImg) img.style.backgroundImage = `url("${state.theme.motivationImg}")`;
+        modal.classList.remove('hidden');
+    }
+
+    function closeModal() { document.getElementById('warning-modal').classList.add('hidden'); currentPendingMeal = null; }
+
+    function updateDashboard() {
+        const upd = (t, l, g, s) => {
+            const durEl = document.getElementById(`display-duration-${t}`), starEl = document.getElementById(`display-stars-${t}`), costEl = document.getElementById(`display-cost-${t}`), barEl = document.getElementById(`display-progress-bar-${t}`), statEl = document.getElementById(`display-status-${t}`);
+            if(!l) { if(durEl) durEl.innerText = "尚未有紀錄"; return; }
+            const diff = Date.now() - l.timestamp, target = g * 86400000;
+            const d = Math.floor(diff/86400000), h = Math.floor((diff%86400000)/3600000);
+            if(durEl) durEl.innerText = `${d}天 ${h}小時`;
+            if(starEl) starEl.innerText = `${s} ★`;
+            if(costEl) costEl.innerText = `NT$ ${l.price.toLocaleString()}`;
+            if(barEl) barEl.style.width = `${Math.min(100, (diff/target)*100)}%`;
+            if(statEl) {
+                if(diff < target) {
+                    statEl.innerHTML = `<span class="material-symbols-outlined text-red-500 filled text-lg">local_fire_department</span> 冷靜中`;
+                } else {
+                    statEl.innerHTML = `<span class="material-symbols-outlined text-green-500 filled text-lg">local_fire_department</span> 加成中`;
+                }
+            }
+        };
+        upd('big', state.lastMeal, state.goalDays, state.stars);
+        upd('small', state.lastSmallMeal, state.smallGoalDays, state.smallStars);
+    }
+
+    function deleteMeal(t, i) {
+        if(!confirm('確定刪除此紀錄？這將重置最後一筆紀錄。')) return;
+        if(t==='big') { state.history.splice(i, 1); state.lastMeal = state.history[0] || null; }
+        else { state.smallMeals.splice(i, 1); state.lastSmallMeal = state.smallMeals[0] || null; }
+        save(); renderHistory(); updateDashboard();
+    }
+
+    function renderHistory() {
+        const gen = (t, l) => {
+            const el = document.getElementById(`history-list-${t}`);
+            if(el) el.innerHTML = l.map((m, i) => `
+            <div class="p-3 bg-white rounded-xl border border-slate-100 flex justify-between items-center shadow-sm">
+                <div><p class="text-[10px] text-slate-400">${new Date(m.timestamp).toLocaleString()}</p><p class="font-bold text-xs">${m.name}</p></div>
+                <div class="flex items-center gap-3"><p class="font-black text-xs text-primary">NT$ ${m.price}</p><button onclick="deleteMeal('${t}', ${i})" class="text-slate-300"><span class="material-symbols-outlined text-sm">delete</span></button></div>
+            </div>`).join('');
+        };
+        gen('big', state.history); gen('small', state.smallMeals);
+    }
+
+    function renderAwards() {
+        const el = document.getElementById('awards-grid');
+        if(!el) return;
+        el.innerHTML = state.awards.map(a => {
+            let val = 0;
+            if(a.type === 'stars') val = state.stars;
+            else if(a.type === 'smallStars') val = state.smallStars;
+            else if(a.type === 'historyCount') val = state.history.length;
+            else if(a.type === 'smallCount') val = state.smallMeals.length;
+            
+            const cond = val >= a.target;
+            return `<div class="bg-white p-4 rounded-2xl border text-center relative ${cond ? 'border-amber-200 shadow-glow' : 'opacity-40'}">
+                <div class="absolute top-2 right-2 flex gap-1">
+                    <button onclick="prepareEditAward(${a.id})" class="text-slate-300 hover:text-primary"><span class="material-symbols-outlined text-xs">edit</span></button>
+                    <button onclick="deleteAward(${a.id})" class="text-slate-300 hover:text-red-500"><span class="material-symbols-outlined text-xs">delete</span></button>
+                </div>
+                <span class="material-symbols-outlined text-2xl ${cond?'text-amber-500 filled':'text-slate-300'}">${a.icon || 'military_tech'}</span>
+                <p class="text-[10px] font-bold mt-1 text-slate-800">${a.title}</p>
+                <p class="text-[8px] text-slate-400 mt-0.5">${a.desc}</p>
+            </div>`;
+        }).join('');
+    }
+
+    function prepareEditAward(id) {
+        editingAwardId = id;
+        const a = state.awards.find(ca => ca.id === id);
+        document.getElementById('award-new-title').value = a.title;
+        document.getElementById('award-new-type').value = a.type;
+        document.getElementById('award-new-target').value = a.target;
+        document.getElementById('award-edit-title-label').innerText = '正在編輯成就';
+        document.getElementById('award-btn-save').innerText = '更新成就';
+        document.getElementById('award-btn-cancel').classList.remove('hidden');
+    }
+
+    function cancelAwardEdit() {
+        editingAwardId = null;
+        document.getElementById('award-new-title').value = "";
+        document.getElementById('award-new-target').value = "";
+        document.getElementById('award-edit-title-label').innerText = '新增自訂成就';
+        document.getElementById('award-btn-save').innerText = '+ 加入成就';
+        document.getElementById('award-btn-cancel').classList.add('hidden');
+    }
+
+    function addCustomAward() {
+        const t = document.getElementById('award-new-title').value, type = document.getElementById('award-new-type').value, target = parseInt(document.getElementById('award-new-target').value);
+        if(!t || isNaN(target)) return;
+        const descMap = { 'stars': '大餐連續達成目標', 'smallStars': '小餐連續達成目標', 'historyCount': '大餐記錄次數', 'smallCount': '小餐記錄次數' };
+        const desc = `${descMap[type]}達 ${target} 次`;
+        if (editingAwardId) {
+            const idx = state.awards.findIndex(ca => ca.id === editingAwardId);
+            state.awards[idx] = { ...state.awards[idx], title: t, type, target, desc };
+            cancelAwardEdit();
+        } else {
+            state.awards.push({ id: Date.now(), title: t, type, target, desc, icon: 'military_tech' });
+        }
+        save(); renderAwards();
+    }
+
+    function deleteAward(id) { if(confirm('確定刪除此成就？')) { state.awards = state.awards.filter(ca => ca.id !== id); save(); renderAwards(); }}
+
+    function renderStats() {
+        const sumB = state.history.reduce((a,b)=>a+b.price,0), countB = state.history.length;
+        const sumS = state.smallMeals.reduce((a,b)=>a+b.price,0), countS = state.smallMeals.length;
+        const avgB = countB ? Math.round(sumB/countB) : 0;
+        const el = document.getElementById('stats-summary');
+        if(!el) return;
+        el.innerHTML = `
+            <div class="grid grid-cols-2 gap-2">
+                <div class="p-4 bg-primary text-white rounded-2xl shadow-sm">
+                    <p class="text-[9px] uppercase font-bold opacity-70">大餐累積支出</p>
+                    <p class="text-lg font-black">$${sumB.toLocaleString()}</p>
+                    <p class="text-[10px] mt-1 font-medium">次數：${countB} | 平均：$${avgB}</p>
+                </div>
+                <div class="p-4 bg-teal-500 text-white rounded-2xl shadow-sm">
+                    <p class="text-[9px] uppercase font-bold opacity-70">小餐累積支出</p>
+                    <p class="text-lg font-black">$${sumS.toLocaleString()}</p>
+                    <p class="text-[10px] mt-1 font-medium">次數：${countS}</p>
+                </div>
+            </div>
+            <div class="p-4 bg-slate-800 text-white rounded-2xl flex justify-between items-center shadow-lg">
+                <span class="font-bold">總計花費</span>
+                <span class="text-xl font-black">$${(sumB+sumS).toLocaleString()}</span>
+            </div>`;
+    }
+
+    function handleFileUpload(e, t) {
+        const file = e.target.files[0]; if(!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            const res = ev.target.result;
+            if (t === 'motivation') state.theme.motivationImg = res;
+            else if (t === 'bodyBg') state.theme.bodyBg.img = res;
+            else state.theme[t].img = res;
+            save(); applyTheme();
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function applyTheme() {
+        const bodyBg = document.getElementById('body-bg-layer'), hBig = document.getElementById('hero-bg-big'), hSmall = document.getElementById('hero-bg-small');
+        const b = state.theme.heroBig, s = state.theme.heroSmall, bb = state.theme.bodyBg;
+        if(bodyBg && bb.img) {
+            bodyBg.style.backgroundImage = `url("${bb.img}")`;
+            bodyBg.style.opacity = bb.op / 100;
+            bodyBg.style.transform = `scale(${bb.sc / 100})`;
+        }
+        if(hBig) {
+            if(b.img) hBig.style.backgroundImage = `url("${b.img}")`;
+            hBig.style.opacity = b.op/100; hBig.style.backgroundSize = `${b.sc}%`; hBig.style.backgroundPositionY = `${b.y}%`;
+        }
+        if(hSmall) {
+            if(s.img) hSmall.style.backgroundImage = `url("${s.img}")`;
+            hSmall.style.opacity = s.op/100; hSmall.style.backgroundSize = `${s.sc}%`; hSmall.style.backgroundPositionY = `${s.y}%`;
+        }
+        const mPrev = document.getElementById('motivation-img-preview');
+        if(mPrev && state.theme.motivationImg) mPrev.style.backgroundImage = `url("${state.theme.motivationImg}")`;
+    }
+
+    function liveUpdateBody() {
+        state.theme.bodyBg.op = document.getElementById('set-body-op').value;
+        state.theme.bodyBg.sc = document.getElementById('set-body-sc').value;
+        document.getElementById('val-body-op').innerText = state.theme.bodyBg.op;
+        document.getElementById('val-body-sc').innerText = state.theme.bodyBg.sc;
+        applyTheme();
+    }
+
+    function liveUpdateHero(t) {
+        const key = t === 'big' ? 'heroBig' : 'heroSmall', p = t === 'big' ? 'hb' : 'hs';
+        state.theme[key].op = document.getElementById(`set-${p}-op`).value;
+        state.theme[key].sc = document.getElementById(`set-${p}-sc`).value;
+        state.theme[key].y = document.getElementById(`set-${p}-y`).value;
+        document.getElementById(`val-${p}-op`).innerText = state.theme[key].op;
+        document.getElementById(`val-${p}-sc`).innerText = state.theme[key].sc;
+        document.getElementById(`val-${p}-y`).innerText = state.theme[key].y;
+        applyTheme();
+    }
+
+    function switchTab(t) {
+        document.querySelectorAll('[id^="view-"]').forEach(v => v.classList.add('hidden'));
+        const target = document.getElementById(`view-${t}`);
+        if(target) target.classList.remove('hidden');
+        document.querySelectorAll('.nav-btn').forEach(b => {
+            const isActive = b.dataset.tab === t;
+            b.classList.toggle('text-primary', isActive);
+            b.classList.toggle('text-slate-400', !isActive);
+        });
+        if(t==='history') renderHistory(); 
+        if(t==='awards') renderAwards(); 
+        if(t==='stats') renderStats();
+        if(t==='settings') {
+            const upd = (p, c) => {
+                const op = document.getElementById(`set-${p}-op`), sc = document.getElementById(`set-${p}-sc`), y = document.getElementById(`set-${p}-y`);
+                if(op) op.value = c.op; if(sc) sc.value = c.sc; if(y) y.value = c.y;
+                const vOp = document.getElementById(`val-${p}-op`), vSc = document.getElementById(`val-${p}-sc`), vY = document.getElementById(`val-${p}-y`);
+                if(vOp) vOp.innerText = c.op; if(vSc) vSc.innerText = c.sc; if(vY) vY.innerText = c.y;
+            };
+            upd('hb', state.theme.heroBig); upd('hs', state.theme.heroSmall);
+            const bo = document.getElementById('set-body-op'), bs = document.getElementById('set-body-sc');
+            if(bo) bo.value = state.theme.bodyBg.op; if(bs) bs.value = state.theme.bodyBg.sc;
+            const bOpt = document.getElementById('set-big-opts'), sOpt = document.getElementById('set-small-opts');
+            if(bOpt) bOpt.value = state.bigIntervals.join(',');
+            if(sOpt) sOpt.value = state.smallIntervals.join(',');
+        }
+    }
+
+    async function saveSettings() {
+        try {
+            const bOpt = document.getElementById('set-big-opts'), sOpt = document.getElementById('set-small-opts');
+            if(bOpt) state.bigIntervals = bOpt.value.split(',').map(v=>parseInt(v.trim())).filter(v=>!isNaN(v));
+            if(sOpt) state.smallIntervals = sOpt.value.split(',').map(v=>parseInt(v.trim())).filter(v=>!isNaN(v));
+            await save(); 
+            renderIntervals(); 
+            switchTab('home'); 
+        } catch(e) { switchTab('home'); }
+    }
+
+    window.onload = init;
+</script>
+</body></html>
