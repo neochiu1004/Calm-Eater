@@ -26,34 +26,56 @@
                     },
                     fontFamily: { "display": ["Manrope", "Noto Sans", "sans-serif"] },
                     boxShadow: { 
+                        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
                         'soft-blue': '0 10px 40px -10px rgba(59, 130, 246, 0.1)', 
                         'glow': '0 0 20px rgba(59, 130, 246, 0.4)',
-                        'danger-glow': '0 0 15px rgba(239, 68, 68, 0.3)' 
                     }
                 },
             },
         }
     </script>
 <style>
-        body { min-height: 100dvh; -webkit-tap-highlight-color: transparent; }
+        body { min-height: 100dvh; -webkit-tap-highlight-color: transparent; background-color: #f8fafc; }
         ::-webkit-scrollbar { width: 0px; background: transparent; }
         .material-symbols-outlined.filled { font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 24 }
-        #body-bg-layer { position: fixed; inset: 0; z-index: -1; background-size: cover; background-position: center; pointer-events: none; transition: all 0.5s ease; }
+        
+        /* 背景層：固定在最底層 */
+        #body-bg-layer { 
+            position: fixed; 
+            inset: 0; 
+            z-index: -1; 
+            background-size: cover; 
+            background-position: center; 
+            pointer-events: none; 
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        /* 毛玻璃效果卡片 */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .hero-bg { position: absolute; inset: 0; background-repeat: no-repeat; transition: all 0.3s ease; }
         .modal-overlay { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(10px); }
+        
         @keyframes modal-in { from { transform: scale(0.9) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
         .animate-modal { animation: modal-in 0.4s cubic-bezier(0.17, 0.89, 0.32, 1.28); }
     </style>
   </head>
-<body class="bg-bg-page font-display antialiased text-text-main">
+<body class="font-display antialiased text-text-main">
 <div id="body-bg-layer"></div>
-<div class="relative flex h-full min-h-screen w-full flex-col overflow-x-hidden max-w-md mx-auto bg-white/95 shadow-2xl">
-<header class="sticky top-0 z-50 flex items-center bg-white/90 backdrop-blur-md px-4 py-3 justify-between border-b border-blue-100">
+
+<!-- 主容器改為透明，以顯示底層背景圖 -->
+<div class="relative flex h-full min-h-screen w-full flex-col overflow-x-hidden max-w-md mx-auto bg-transparent shadow-2xl">
+<header class="sticky top-0 z-50 flex items-center bg-white/70 backdrop-blur-lg px-4 py-3 justify-between border-b border-white/20 shadow-sm">
 <div class="w-8"></div>
 <h2 id="header-title" class="text-text-main text-lg font-extrabold flex-1 text-center tracking-tight">Diet Patience</h2>
 <div class="w-8 flex justify-end">
-<button onclick="switchTab('settings')" class="text-text-light hover:text-primary transition-colors p-1 rounded-full hover:bg-blue-50">
+<button onclick="switchTab('settings')" class="text-text-light hover:text-primary transition-colors p-1 rounded-full hover:bg-white/50">
 <span class="material-symbols-outlined">settings</span>
 </button>
 </div>
@@ -65,48 +87,48 @@
         <!-- Big Meal Section -->
         <section class="space-y-4">
             <div class="flex justify-between items-end px-1">
-                <h3 class="text-xs font-black text-primary uppercase tracking-widest">大餐倒數儀表板</h3>
+                <h3 class="text-xs font-black text-primary uppercase tracking-widest drop-shadow-sm">大餐倒數儀表板</h3>
                 <div id="black-star-container-big" class="flex gap-1"></div>
             </div>
-            <div class="flex flex-col rounded-3xl shadow-soft-blue bg-white overflow-hidden border border-blue-50 relative">
+            <div class="flex flex-col rounded-[2rem] shadow-glass glass-card overflow-hidden relative">
                 <div id="hero-bg-big" class="hero-bg" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDWU3YWOZtS24ARubGFDrBICBqnQoQnKy56zBFXnoMi5tq5qGReqMy4ZOJYI7tldo3VNAyB1R78qQR71ZKQb6BGilN5xOoaXRYsDs3BjrJSxmS2DrjFRZ0j-fQAQ3RjL1dfpPr17X-9ysHPYeM6gHw1tjkv1rsZYb7URKyjWAvSqycJ-bG3XMM98GdEpg2fGUtOghg0n1Lrq5DnbUJPcy8A23bEs-MM4iBCKoWRw0pAKl1EIZP6VnNIx7VA6DYcvxZMlf90RU-X4h4"); background-size: cover; background-position: center;'></div>
-                <div class="absolute inset-0 bg-gradient-to-t from-blue-900 via-blue-900/30 to-transparent"></div>
-                <div class="relative p-6 text-white mt-24">
+                <div class="absolute inset-0 bg-gradient-to-t from-blue-900/80 via-blue-900/20 to-transparent"></div>
+                <div class="relative p-7 text-white mt-24">
                     <div class="flex justify-between items-end">
                         <div class="space-y-1">
-                            <p class="text-[10px] text-blue-100 font-bold uppercase tracking-wider">冷靜期剩餘時間</p>
-                            <p id="display-duration-big" class="text-4xl font-black tracking-tighter">--</p>
-                            <p class="text-[10px] text-blue-100 font-medium">目前的紀律狀態：<span id="display-tag-big" class="bg-green-500/80 px-1.5 py-0.5 rounded text-[9px]">計算中</span></p>
+                            <p class="text-[10px] text-blue-100 font-bold uppercase tracking-wider opacity-90">冷靜期剩餘時間</p>
+                            <p id="display-duration-big" class="text-4xl font-black tracking-tighter drop-shadow-md">--</p>
+                            <p class="text-[10px] text-blue-100 font-medium bg-black/20 backdrop-blur-sm inline-block px-2 py-0.5 rounded-full mt-2">狀態：<span id="display-tag-big">計算中</span></p>
                         </div>
-                        <span id="display-stars-big" class="bg-amber-400 text-blue-900 px-3 py-1 rounded-full text-xs font-black shadow-lg">0 ★</span>
+                        <span id="display-stars-big" class="bg-amber-400 text-blue-900 px-3.5 py-1.5 rounded-full text-xs font-black shadow-glow border border-amber-300">0 ★</span>
                     </div>
                 </div>
-                <div class="bg-white p-5 space-y-4 relative z-10">
+                <div class="bg-white/60 backdrop-blur-md p-5 space-y-4 relative z-10">
                     <div class="grid grid-cols-2 gap-3 text-center">
-                        <div class="p-3 bg-slate-50 rounded-2xl border border-slate-100">
-                            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">最近一次花費</p>
+                        <div class="p-3 bg-white/40 rounded-2xl border border-white/50">
+                            <p class="text-[9px] font-bold text-slate-500 uppercase tracking-wider">最近一次花費</p>
                             <p id="display-cost-big" class="text-base font-black text-blue-900">NT$ 0</p>
                         </div>
-                        <div class="p-3 bg-slate-50 rounded-2xl border border-slate-100">
-                            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">當前克制狀態</p>
+                        <div class="p-3 bg-white/40 rounded-2xl border border-white/50">
+                            <p class="text-[9px] font-bold text-slate-500 uppercase tracking-wider">當前紀律</p>
                             <div id="display-status-big" class="text-[11px] font-bold flex items-center justify-center gap-1">等待中</div>
                         </div>
                     </div>
-                    <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                        <div id="display-progress-bar-big" class="bg-gradient-to-r from-primary to-secondary h-full transition-all duration-1000 shadow-glow" style="width: 0%"></div>
+                    <div class="w-full bg-slate-200/50 h-2 rounded-full overflow-hidden">
+                        <div id="display-progress-bar-big" class="bg-gradient-to-r from-primary to-secondary h-full transition-all duration-1000" style="width: 0%"></div>
                     </div>
                 </div>
             </div>
             <div id="interval-container-big" class="flex gap-2 overflow-x-auto no-scrollbar pb-1"></div>
-            <form onsubmit="return false;" class="bg-white p-5 rounded-3xl border border-blue-50 shadow-sm space-y-3">
-                <input id="input-big-name" class="w-full bg-slate-50 border-slate-100 rounded-xl text-xs p-3 focus:ring-2 focus:ring-primary/20 transition-all outline-none" placeholder="大餐名稱 (例如: 和牛燒肉)"/>
+            <form onsubmit="return false;" class="glass-card p-5 rounded-[2rem] shadow-glass space-y-3">
+                <input id="input-big-name" class="w-full bg-white/50 border-white/50 rounded-xl text-xs p-3 focus:ring-2 focus:ring-primary/20 transition-all outline-none" placeholder="大餐名稱 (例如: 和牛燒肉)"/>
                 <div class="flex gap-2 text-xs">
-                    <input id="input-big-date" class="flex-1 bg-slate-50 border-slate-100 rounded-xl p-3 outline-none" type="date"/>
-                    <input id="input-big-time" class="w-24 bg-slate-50 border-slate-100 rounded-xl p-3 outline-none" type="time"/>
+                    <input id="input-big-date" class="flex-1 bg-white/50 border-white/50 rounded-xl p-3 outline-none" type="date"/>
+                    <input id="input-big-time" class="w-24 bg-white/50 border-white/50 rounded-xl p-3 outline-none" type="time"/>
                 </div>
                 <div class="flex gap-2">
-                    <input id="input-big-price" class="flex-1 bg-slate-50 border-slate-100 rounded-xl text-sm font-bold p-3 outline-none" placeholder="金額 NT$" type="number"/>
-                    <button onclick="tryAddMeal('big')" class="bg-primary hover:bg-primary-hover text-white px-6 rounded-xl text-xs font-bold transition-all active:scale-95 shadow-lg shadow-primary/20">記錄大餐</button>
+                    <input id="input-big-price" class="flex-1 bg-white/50 border-white/50 rounded-xl text-sm font-bold p-3 outline-none" placeholder="金額 NT$" type="number"/>
+                    <button onclick="tryAddMeal('big')" class="bg-primary hover:bg-primary-hover text-white px-6 rounded-xl text-xs font-bold transition-all active:scale-95 shadow-lg shadow-primary/30">記錄大餐</button>
                 </div>
             </form>
         </section>
@@ -114,48 +136,48 @@
         <!-- Small Meal Section -->
         <section class="space-y-4">
             <div class="flex justify-between items-end px-1">
-                <h3 class="text-xs font-black text-teal-600 uppercase tracking-widest">小餐倒數儀表板</h3>
+                <h3 class="text-xs font-black text-teal-600 uppercase tracking-widest drop-shadow-sm">小餐倒數儀表板</h3>
                 <div id="black-star-container-small" class="flex gap-1"></div>
             </div>
-            <div class="flex flex-col rounded-3xl shadow-soft-blue bg-white overflow-hidden border border-teal-50 relative">
+            <div class="flex flex-col rounded-[2rem] shadow-glass glass-card overflow-hidden relative">
                 <div id="hero-bg-small" class="hero-bg" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDWU3YWOZtS24ARubGFDrBICBqnQoQnKy56zBFXnoMi5tq5qGReqMy4ZOJYI7tldo3VNAyB1R78qQR71ZKQb6BGilN5xOoaXRYsDs3BjrJSxmS2DrjFRZ0j-fQAQ3RjL1dfpPr17X-9ysHPYeM6gHw1tjkv1rsZYb7URKyjWAvSqycJ-bG3XMM98GdEpg2fGUtOghg0n1Lrq5DnbUJPcy8A23bEs-MM4iBCKoWRw0pAKl1EIZP6VnNIx7VA6DYcvxZMlf90RU-X4h4"); background-size: cover; background-position: center; filter: hue-rotate(140deg);'></div>
-                <div class="absolute inset-0 bg-gradient-to-t from-teal-900 via-teal-900/30 to-transparent"></div>
-                <div class="relative p-6 text-white mt-20">
+                <div class="absolute inset-0 bg-gradient-to-t from-teal-900/80 via-teal-900/20 to-transparent"></div>
+                <div class="relative p-7 text-white mt-20">
                     <div class="flex justify-between items-end">
                         <div class="space-y-1">
-                            <p class="text-[10px] text-teal-100 font-bold uppercase tracking-wider">冷靜期剩餘時間</p>
-                            <p id="display-duration-small" class="text-3xl font-black tracking-tighter">--</p>
-                            <p class="text-[10px] text-teal-100 font-bold">自律計畫：<span id="display-tag-small" class="bg-cyan-500/80 px-1.5 py-0.5 rounded text-[9px]">計算中</span></p>
+                            <p class="text-[10px] text-teal-50 font-bold uppercase tracking-wider opacity-90">冷靜期剩餘時間</p>
+                            <p id="display-duration-small" class="text-4xl font-black tracking-tighter drop-shadow-md">--</p>
+                            <p class="text-[10px] text-teal-100 font-bold bg-black/20 backdrop-blur-sm inline-block px-2 py-0.5 rounded-full mt-2">狀態：<span id="display-tag-small">計算中</span></p>
                         </div>
-                        <span id="display-stars-small" class="bg-cyan-400 text-teal-900 px-3 py-1 rounded-full text-xs font-black">0 ★</span>
+                        <span id="display-stars-small" class="bg-cyan-400 text-teal-900 px-3.5 py-1.5 rounded-full text-xs font-black shadow-glow border border-cyan-300">0 ★</span>
                     </div>
                 </div>
-                <div class="bg-white p-5 space-y-4 relative z-10">
+                <div class="bg-white/60 backdrop-blur-md p-5 space-y-4 relative z-10">
                     <div class="grid grid-cols-2 gap-3 text-center">
-                        <div class="p-3 bg-slate-50 rounded-2xl border border-slate-100">
-                            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">本次小餐花費</p>
+                        <div class="p-3 bg-white/40 rounded-2xl border border-white/50">
+                            <p class="text-[9px] font-bold text-slate-500 uppercase tracking-wider">本次花費</p>
                             <p id="display-cost-small" class="text-base font-black text-teal-700">NT$ 0</p>
                         </div>
-                        <div class="p-3 bg-slate-50 rounded-2xl border border-slate-100">
-                            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">當前克制狀態</p>
+                        <div class="p-3 bg-white/40 rounded-2xl border border-white/50">
+                            <p class="text-[9px] font-bold text-slate-500 uppercase tracking-wider">克制狀態</p>
                             <div id="display-status-small" class="text-[11px] font-bold flex items-center justify-center gap-1">等待中</div>
                         </div>
                     </div>
-                    <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                        <div id="display-progress-bar-small" class="bg-gradient-to-r from-teal-500 to-cyan-400 h-full transition-all duration-1000 shadow-glow" style="width: 0%"></div>
+                    <div class="w-full bg-slate-200/50 h-2 rounded-full overflow-hidden">
+                        <div id="display-progress-bar-small" class="bg-gradient-to-r from-teal-500 to-cyan-400 h-full transition-all duration-1000" style="width: 0%"></div>
                     </div>
                 </div>
             </div>
             <div id="interval-container-small" class="flex gap-2 overflow-x-auto no-scrollbar pb-1"></div>
-            <form onsubmit="return false;" class="bg-white p-5 rounded-3xl border border-teal-50 shadow-sm space-y-3">
-                <input id="input-small-name" class="w-full bg-slate-50 border-slate-100 rounded-xl text-xs p-3 focus:ring-2 focus:ring-teal-500/20 transition-all outline-none" placeholder="小餐名稱 (例如: 手搖飲)"/>
+            <form onsubmit="return false;" class="glass-card p-5 rounded-[2rem] shadow-glass space-y-3">
+                <input id="input-small-name" class="w-full bg-white/50 border-white/50 rounded-xl text-xs p-3 focus:ring-2 focus:ring-teal-500/20 transition-all outline-none" placeholder="小餐名稱 (例如: 手搖飲)"/>
                 <div class="flex gap-2 text-xs">
-                    <input id="input-small-date" class="flex-1 bg-slate-50 border-slate-100 rounded-xl p-3 outline-none" type="date"/>
-                    <input id="input-small-time" class="w-24 bg-slate-50 border-slate-100 rounded-xl p-3 outline-none" type="time"/>
+                    <input id="input-small-date" class="flex-1 bg-white/50 border-white/50 rounded-xl p-3 outline-none" type="date"/>
+                    <input id="input-small-time" class="w-24 bg-white/50 border-white/50 rounded-xl p-3 outline-none" type="time"/>
                 </div>
                 <div class="flex gap-2">
-                    <input id="input-small-price" class="flex-1 bg-slate-50 border-slate-100 rounded-xl text-sm font-bold p-3 outline-none" placeholder="金額 NT$" type="number"/>
-                    <button onclick="tryAddMeal('small')" class="bg-teal-500 hover:bg-teal-600 text-white px-6 rounded-xl text-xs font-bold transition-all active:scale-95 shadow-lg shadow-teal-500/20">記錄小餐</button>
+                    <input id="input-small-price" class="flex-1 bg-white/50 border-white/50 rounded-xl text-sm font-bold p-3 outline-none" placeholder="金額 NT$" type="number"/>
+                    <button onclick="tryAddMeal('small')" class="bg-teal-500 hover:bg-teal-600 text-white px-6 rounded-xl text-xs font-bold transition-all active:scale-95 shadow-lg shadow-teal-500/30">記錄小餐</button>
                 </div>
             </form>
         </section>
@@ -170,28 +192,28 @@
     <!-- View: Awards -->
     <div id="view-awards" class="p-4 hidden space-y-6">
         <div id="awards-grid" class="grid grid-cols-2 gap-4"></div>
-        <div class="bg-white p-5 rounded-3xl border border-slate-100 space-y-4 shadow-sm">
-            <h4 id="award-edit-title-label" class="text-xs font-black text-slate-400 uppercase">新增成就獎章</h4>
-            <input id="award-new-title" class="w-full bg-slate-50 border-slate-200 rounded-xl text-xs p-3 outline-none" placeholder="成就名稱"/>
+        <div class="glass-card p-5 rounded-[2rem] space-y-4 shadow-glass">
+            <h4 id="award-edit-title-label" class="text-xs font-black text-slate-500 uppercase">新增成就獎章</h4>
+            <input id="award-new-title" class="w-full bg-white/50 border-white/50 rounded-xl text-xs p-3 outline-none" placeholder="成就名稱"/>
             <div class="grid grid-cols-2 gap-2">
-                <select id="award-new-type" class="bg-slate-50 border-slate-100 rounded-xl text-xs p-3 focus:ring-0 outline-none">
+                <select id="award-new-type" class="bg-white/50 border-white/50 rounded-xl text-xs p-3 outline-none">
                     <option value="stars">大餐連擊數</option>
                     <option value="smallStars">小餐連擊數</option>
                     <option value="historyCount">大餐總次數</option>
                     <option value="smallCount">小餐總次數</option>
                 </select>
-                <input id="award-new-target" type="number" class="bg-slate-50 border-slate-100 rounded-xl text-xs p-3 outline-none" placeholder="目標數值"/>
+                <input id="award-new-target" type="number" class="bg-white/50 border-white/50 rounded-xl text-xs p-3 outline-none" placeholder="目標數值"/>
             </div>
             <div class="flex gap-2">
-                <button id="award-btn-save" onclick="addCustomAward()" class="flex-1 bg-primary text-white font-bold py-3 rounded-xl text-xs shadow-lg shadow-primary/20">儲存成就</button>
-                <button id="award-btn-cancel" onclick="cancelAwardEdit()" class="hidden flex-1 bg-slate-100 text-slate-500 font-bold py-3 rounded-xl text-xs">取消</button>
+                <button id="award-btn-save" onclick="addCustomAward()" class="flex-1 bg-primary text-white font-bold py-3 rounded-xl text-xs">儲存成就</button>
+                <button id="award-btn-cancel" onclick="cancelAwardEdit()" class="hidden flex-1 bg-slate-200 text-slate-500 font-bold py-3 rounded-xl text-xs">取消</button>
             </div>
         </div>
     </div>
 
     <!-- View: Stats -->
     <div id="view-stats" class="p-4 hidden space-y-4">
-        <h3 class="text-xs font-black text-slate-400 uppercase mb-2 px-1">自律數據報表</h3>
+        <h3 class="text-xs font-black text-slate-400 uppercase mb-2 px-1">自律數據統計</h3>
         <div id="stats-summary" class="space-y-4"></div>
     </div>
 
@@ -199,29 +221,29 @@
     <div id="view-settings" class="p-4 hidden space-y-6 pb-24">
         <section class="space-y-4">
             <div class="flex justify-between items-center px-1">
-                <h4 class="text-sm font-black text-slate-400 uppercase">設定與視覺管理</h4>
-                <button onclick="switchTab('home')" class="text-slate-400"><span class="material-symbols-outlined text-sm">close</span></button>
+                <h4 class="text-sm font-black text-slate-400 uppercase">偏好設定與介面</h4>
+                <button onclick="switchTab('home')" class="text-slate-400 p-1"><span class="material-symbols-outlined">close</span></button>
             </div>
 
             <!-- Global Background & Motivation -->
-            <div class="bg-white p-5 rounded-3xl border border-slate-100 space-y-5 shadow-sm">
-                <h5 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">激勵與全域背景</h5>
+            <div class="glass-card p-5 rounded-[2rem] space-y-5 shadow-glass">
+                <h5 class="text-[10px] font-black text-slate-500 uppercase tracking-widest">主視覺與激勵圖片</h5>
                 <div class="space-y-4">
                     <div class="space-y-2">
-                        <label class="text-[10px] font-bold text-slate-400">激勵圖片 (冷靜期彈窗)</label>
+                        <label class="text-[10px] font-bold text-slate-400">激勵圖片 (彈窗顯示)</label>
                         <div class="flex gap-2">
                             <input type="file" id="motivation-img-file" class="hidden" onchange="handleFileUpload(event, 'motivation')"/>
-                            <button onclick="document.getElementById('motivation-img-file').click()" class="flex-1 bg-orange-50 text-orange-600 py-3 rounded-xl font-bold text-xs border border-orange-100">更換激勵圖</button>
-                            <button onclick="removeImage('motivation')" class="px-4 bg-slate-50 text-slate-400 rounded-xl border border-slate-100 hover:text-red-500 transition-colors"><span class="material-symbols-outlined text-sm">image_not_supported</span></button>
+                            <button onclick="document.getElementById('motivation-img-file').click()" class="flex-1 bg-orange-50 text-orange-600 py-3 rounded-xl font-bold text-xs">更換圖片</button>
+                            <button onclick="removeImage('motivation')" class="px-4 bg-slate-50 text-slate-400 rounded-xl"><span class="material-symbols-outlined text-sm">image_not_supported</span></button>
                         </div>
-                        <div id="motivation-img-preview" class="w-full h-32 bg-slate-50 rounded-2xl bg-contain bg-center bg-no-repeat border border-dashed border-slate-200 shadow-inner"></div>
+                        <div id="motivation-img-preview" class="w-full h-32 bg-slate-100/50 rounded-2xl bg-contain bg-center bg-no-repeat border border-dashed border-slate-300"></div>
                     </div>
                     <div class="space-y-2">
-                        <label class="text-[10px] font-bold text-slate-400">主體全域背景圖</label>
+                        <label class="text-[10px] font-bold text-slate-400">全域背景圖片設定</label>
                         <div class="flex gap-2">
                             <input type="file" id="body-bg-file" class="hidden" onchange="handleFileUpload(event, 'bodyBg')"/>
-                            <button onclick="document.getElementById('body-bg-file').click()" class="flex-1 bg-slate-50 text-slate-600 py-3 rounded-xl font-bold text-xs border border-slate-200">選擇全域背景</button>
-                            <button onclick="removeImage('bodyBg')" class="px-4 bg-slate-50 text-slate-400 rounded-xl border border-slate-100 hover:text-red-500 transition-colors"><span class="material-symbols-outlined text-sm">image_not_supported</span></button>
+                            <button onclick="document.getElementById('body-bg-file').click()" class="flex-1 bg-slate-50 text-slate-600 py-3 rounded-xl font-bold text-xs">選擇背景圖</button>
+                            <button onclick="removeImage('bodyBg')" class="px-4 bg-slate-50 text-slate-400 rounded-xl"><span class="material-symbols-outlined text-sm">image_not_supported</span></button>
                         </div>
                         <div class="grid grid-cols-2 gap-3 mt-2">
                             <div class="space-y-1">
@@ -237,59 +259,28 @@
                 </div>
             </div>
 
-            <!-- Big Meal Hero -->
-            <div class="bg-white p-5 rounded-3xl border border-slate-100 space-y-4 shadow-sm">
-                <h5 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">大餐看板視覺</h5>
-                <div class="space-y-3">
-                    <div class="flex gap-2">
-                        <input type="file" id="hero-big-file" class="hidden" onchange="handleFileUpload(event, 'heroBig')"/>
-                        <button onclick="document.getElementById('hero-big-file').click()" class="flex-1 bg-blue-50 text-blue-600 py-2.5 rounded-xl font-bold text-xs">更換大餐看板圖片</button>
-                        <button onclick="removeImage('heroBig')" class="px-3 bg-slate-50 text-slate-300 rounded-xl border border-slate-100 hover:text-red-500 transition-colors"><span class="material-symbols-outlined text-sm">image_not_supported</span></button>
-                    </div>
-                    <div class="grid grid-cols-3 gap-2">
-                        <div class="space-y-1">
-                            <p class="text-[8px] text-slate-400 text-center">位移 <span id="val-hb-y">50</span>%</p>
-                            <input id="set-hb-y" type="range" class="w-full h-1" oninput="liveUpdateHero('big')"/>
+            <!-- Dashboard Visuals -->
+            <div class="glass-card p-5 rounded-[2rem] space-y-4 shadow-glass">
+                <h5 class="text-[10px] font-black text-slate-500 uppercase tracking-widest">看板深度自訂</h5>
+                <div class="space-y-5">
+                    <!-- Big Meal -->
+                    <div class="space-y-2">
+                        <p class="text-[9px] font-bold text-blue-500 uppercase tracking-tighter">大餐看板設定</p>
+                        <div class="flex gap-2">
+                            <input type="file" id="hero-big-file" class="hidden" onchange="handleFileUpload(event, 'heroBig')"/>
+                            <button onclick="document.getElementById('hero-big-file').click()" class="flex-1 bg-blue-50 text-blue-600 py-2.5 rounded-xl font-bold text-xs">更換圖片</button>
+                            <button onclick="removeImage('heroBig')" class="px-3 bg-slate-50 text-slate-300 rounded-xl"><span class="material-symbols-outlined text-sm">delete</span></button>
                         </div>
-                        <div class="space-y-1">
-                            <p class="text-[8px] text-slate-400 text-center">縮放 <span id="val-hb-sc">100</span>%</p>
-                            <input id="set-hb-sc" type="range" min="50" max="250" class="w-full h-1" oninput="liveUpdateHero('big')"/>
-                        </div>
-                        <div class="space-y-1">
-                            <p class="text-[8px] text-slate-400 text-center">透明 <span id="val-hb-op">100</span>%</p>
-                            <input id="set-hb-op" type="range" class="w-full h-1" oninput="liveUpdateHero('big')"/>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="space-y-1"><p class="text-[8px] text-slate-400 text-center">位移 <span id="val-hb-y">50</span>%</p><input id="set-hb-y" type="range" class="w-full h-1" oninput="liveUpdateHero('big')"/></div>
+                            <div class="space-y-1"><p class="text-[8px] text-slate-400 text-center">縮放 <span id="val-hb-sc">100</span>%</p><input id="set-hb-sc" type="range" min="50" max="250" class="w-full h-1" oninput="liveUpdateHero('big')"/></div>
+                            <div class="space-y-1"><p class="text-[8px] text-slate-400 text-center">透明 <span id="val-hb-op">100</span>%</p><input id="set-hb-op" type="range" class="w-full h-1" oninput="liveUpdateHero('big')"/></div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Small Meal Hero -->
-            <div class="bg-white p-5 rounded-3xl border border-slate-100 space-y-4 shadow-sm">
-                <h5 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">小餐看板視覺</h5>
-                <div class="space-y-3">
-                    <div class="flex gap-2">
-                        <input type="file" id="hero-small-file" class="hidden" onchange="handleFileUpload(event, 'heroSmall')"/>
-                        <button onclick="document.getElementById('hero-small-file').click()" class="flex-1 bg-teal-50 text-teal-600 py-2.5 rounded-xl font-bold text-xs">更換小餐看板圖片</button>
-                        <button onclick="removeImage('heroSmall')" class="px-3 bg-slate-50 text-slate-300 rounded-xl border border-slate-100 hover:text-red-500 transition-colors"><span class="material-symbols-outlined text-sm">image_not_supported</span></button>
-                    </div>
-                    <div class="grid grid-cols-3 gap-2">
-                        <div class="space-y-1">
-                            <p class="text-[8px] text-slate-400 text-center">位移 <span id="val-hs-y">50</span>%</p>
-                            <input id="set-hs-y" type="range" class="w-full h-1" oninput="liveUpdateHero('small')"/>
-                        </div>
-                        <div class="space-y-1">
-                            <p class="text-[8px] text-slate-400 text-center">縮放 <span id="val-hs-sc">100</span>%</p>
-                            <input id="set-hs-sc" type="range" min="50" max="250" class="w-full h-1" oninput="liveUpdateHero('small')"/>
-                        </div>
-                        <div class="space-y-1">
-                            <p class="text-[8px] text-slate-400 text-center">透明 <span id="val-hs-op">60</span>%</p>
-                            <input id="set-hs-op" type="range" class="w-full h-1" oninput="liveUpdateHero('small')"/>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <button onclick="saveSettings()" class="w-full bg-slate-900 text-white font-bold py-4 rounded-2xl shadow-xl active:scale-95 transition-all">儲存並完成設定</button>
+            <button onclick="saveSettings()" class="w-full bg-slate-900 text-white font-bold py-4 rounded-[2rem] shadow-xl active:scale-95 transition-all">儲存並完成設定</button>
         </section>
     </div>
 </div>
@@ -313,7 +304,7 @@
     </div>
 </div>
 
-<div class="fixed bottom-0 w-full max-w-md bg-white/95 backdrop-blur-md border-t border-blue-100 flex justify-around items-center h-16 pb-safe">
+<div class="fixed bottom-0 w-full max-w-md bg-white/80 backdrop-blur-xl border-t border-white/20 flex justify-around items-center h-16 pb-safe">
     <button onclick="switchTab('home')" class="nav-btn flex flex-col items-center text-primary" data-tab="home"><span class="material-symbols-outlined">home</span><span class="text-[10px] font-bold">首頁</span></button>
     <button onclick="switchTab('history')" class="nav-btn flex flex-col items-center text-slate-400" data-tab="history"><span class="material-symbols-outlined">history</span><span class="text-[10px] font-bold">歷史</span></button>
     <button onclick="switchTab('awards')" class="nav-btn flex flex-col items-center text-slate-400" data-tab="awards"><span class="material-symbols-outlined">emoji_events</span><span class="text-[10px] font-bold">成就</span></button>
@@ -322,10 +313,10 @@
 </div>
 
 <script>
-    // 資料庫版本與名稱
-    const DB_NAME = 'DIET_PATIENCE_DB_V4_3', DB_VER = 1, STORE_NAME = 'app_state';
+    // 固定資料庫名稱，防止更新後資料遺失
+    const DB_NAME = 'DIET_PATIENCE_STABLE_STORAGE'; 
+    const DB_VER = 1, STORE_NAME = 'app_state';
     
-    // IndexedDB 工具封裝
     function openDB() {
         return new Promise((resolve, reject) => {
             const req = indexedDB.open(DB_NAME, DB_VER);
@@ -357,14 +348,12 @@
         } catch(e) { return null; }
     }
 
-    // 預設成就
     const DEFAULT_AWARDS = [
         { id: 1, title: '忍耐新手', type: 'historyCount', target: 1, desc: '大餐記錄次數達 1 次', icon: 'restaurant' },
         { id: 2, title: '連擊大師', type: 'stars', target: 3, desc: '大餐連續達成目標 3 次', icon: 'stars' },
         { id: 3, title: '自律之星', type: 'smallStars', target: 3, desc: '小餐連續達成目標 3 次', icon: 'coffee' }
     ];
 
-    // 全域狀態物件 (UTC+8 友善)
     let state = {
         lastMeal: null, goalDays: 7, stars: 0, blackStars: 0, history: [],
         lastSmallMeal: null, smallGoalDays: 3, smallStars: 0, smallBlackStars: 0, smallMeals: [],
@@ -385,9 +374,9 @@
         const saved = await dbGet('MAIN_STATE');
         if (saved) state = { ...state, ...saved };
         
-        // 設定日期輸入框為今天 (考慮時區)
+        // 設定日期輸入框為東八區今天
         const now = new Date();
-        const dStr = now.toLocaleDateString('en-CA'); // YYYY-MM-DD
+        const dStr = now.toLocaleDateString('en-CA', { timeZone: 'Asia/Taipei' }); 
         const tStr = now.toTimeString().slice(0, 5);
         
         ['big', 'small'].forEach(t => { 
@@ -460,21 +449,20 @@
         const img = document.getElementById('modal-motivate-img');
         if (state.theme.motivationImg) {
             img.style.backgroundImage = `url("${state.theme.motivationImg}")`;
-            img.style.display = 'block';
+            img.classList.remove('hidden');
         } else {
-            img.style.display = 'none';
+            img.classList.add('hidden');
         }
         modal.classList.remove('hidden');
     }
 
     function closeModal() { document.getElementById('warning-modal').classList.add('hidden'); }
 
-    // 核心更新：倒數計時與狀態顯示
     function updateDashboard() {
         const upd = (t, l, g, s, bs) => {
             const durEl = document.getElementById(`display-duration-${t}`), starEl = document.getElementById(`display-stars-${t}`), costEl = document.getElementById(`display-cost-${t}`), barEl = document.getElementById(`display-progress-bar-${t}`), statEl = document.getElementById(`display-status-${t}`), bContainer = document.getElementById(`black-star-container-${t}`), tagEl = document.getElementById(`display-tag-${t}`);
             
-            if(!l) { if(durEl) durEl.innerText = "尚未有紀錄"; if(tagEl) tagEl.innerText = "等待計畫開始"; return; }
+            if(!l) { if(durEl) durEl.innerText = "計畫待開始"; return; }
             
             const now = Date.now();
             const targetTime = l.timestamp + (g * 86400000);
@@ -486,11 +474,11 @@
                 const mins = Math.floor((remaining % 3600000) / 60000);
                 
                 if(durEl) durEl.innerText = `${days > 0 ? days + '天 ' : ''}${hours}時 ${mins}分`;
-                if(tagEl) tagEl.innerText = "冷靜期倒數中";
-                if(statEl) statEl.innerHTML = `<span class="material-symbols-outlined text-red-500 filled text-lg">local_fire_department</span> 冷靜中`;
+                if(tagEl) tagEl.innerText = "冷靜倒數中";
+                if(statEl) statEl.innerHTML = `<span class="material-symbols-outlined text-red-500 filled text-lg">local_fire_department</span> 冷靜期`;
             } else {
-                if(durEl) durEl.innerText = "冷靜期已屆滿";
-                if(tagEl) tagEl.innerText = "計畫已達標";
+                if(durEl) durEl.innerText = "已達標！";
+                if(tagEl) tagEl.innerText = "冷靜期結束";
                 if(statEl) statEl.innerHTML = `<span class="material-symbols-outlined text-green-500 filled text-lg">local_fire_department</span> 加成中`;
             }
 
@@ -516,11 +504,11 @@
         const gen = (t, l) => {
             const el = document.getElementById(`history-list-${t}`);
             if(el) el.innerHTML = l.map((m, i) => `
-            <div class="p-4 bg-white rounded-2xl border border-slate-100 flex justify-between items-center shadow-sm relative overflow-hidden">
+            <div class="glass-card p-4 rounded-2xl flex justify-between items-center shadow-sm relative overflow-hidden">
                 ${m.isPenalty ? '<div class="absolute top-0 left-0 w-1 h-full bg-red-500"></div>' : ''}
                 <div class="pl-2">
                     <p class="text-[9px] font-bold text-slate-400">${new Date(m.timestamp).toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' })}</p>
-                    <p class="font-bold text-xs flex items-center gap-1">${m.name} ${m.isPenalty ? '<span class="text-[8px] bg-red-100 text-red-600 px-1 rounded">懲罰</span>':''}</p>
+                    <p class="font-bold text-xs flex items-center gap-1">${m.name} ${m.isPenalty ? '<span class="text-[8px] bg-red-100 text-red-600 px-1 rounded">黑星</span>':''}</p>
                 </div>
                 <div class="flex items-center gap-4">
                     <p class="font-black text-xs ${m.isPenalty?'text-red-500':'text-primary'}">NT$ ${m.price}</p>
@@ -541,7 +529,7 @@
             else if(a.type === 'historyCount') val = state.history.length;
             else if(a.type === 'smallCount') val = state.smallMeals.length;
             const cond = val >= a.target;
-            return `<div class="bg-white p-5 rounded-3xl border text-center relative transition-all ${cond ? 'border-amber-200 shadow-glow' : 'opacity-30'}">
+            return `<div class="glass-card p-5 rounded-3xl text-center relative transition-all ${cond ? 'border-amber-200' : 'opacity-30'}">
                 <div class="absolute top-3 right-3 flex gap-1">
                     <button onclick="prepareEditAward(${a.id})" class="text-slate-300 hover:text-primary"><span class="material-symbols-outlined text-xs">edit</span></button>
                     <button onclick="deleteAward(${a.id})" class="text-slate-300 hover:text-red-500"><span class="material-symbols-outlined text-xs">delete</span></button>
@@ -598,26 +586,20 @@
         if(!el) return;
         el.innerHTML = `
             <div class="grid grid-cols-2 gap-3">
-                <div class="p-5 bg-primary text-white rounded-[2rem] shadow-lg shadow-primary/20">
-                    <p class="text-[9px] uppercase font-black opacity-70 tracking-widest">大餐支出</p>
+                <div class="p-5 glass-card rounded-[2rem] border-blue-100">
+                    <p class="text-[9px] uppercase font-black text-blue-500 tracking-widest">大餐支出</p>
                     <p class="text-xl font-black mt-1">$${sumB.toLocaleString()}</p>
-                    <p class="text-[9px] mt-2 font-bold bg-white/20 inline-block px-1.5 rounded">大餐總次數：${countB}</p>
+                    <p class="text-[9px] mt-2 font-bold text-slate-400">總計：${countB} 次</p>
                 </div>
-                <div class="p-5 bg-teal-500 text-white rounded-[2rem] shadow-lg shadow-teal-500/20">
-                    <p class="text-[9px] uppercase font-black opacity-70 tracking-widest">小餐支出</p>
+                <div class="p-5 glass-card rounded-[2rem] border-teal-100">
+                    <p class="text-[9px] uppercase font-black text-teal-600 tracking-widest">小餐支出</p>
                     <p class="text-xl font-black mt-1">$${sumS.toLocaleString()}</p>
-                    <p class="text-[9px] mt-2 font-bold bg-white/20 inline-block px-1.5 rounded">小餐總次數：${countS}</p>
+                    <p class="text-[9px] mt-2 font-bold text-slate-400">總計：${countS} 次</p>
                 </div>
             </div>
             <div class="p-6 bg-slate-900 text-white rounded-[2rem] flex justify-between items-center shadow-xl">
-                <div>
-                    <p class="text-[9px] uppercase font-black opacity-50 tracking-widest">總花費累計</p>
-                    <p class="text-2xl font-black mt-1">$${(sumB+sumS).toLocaleString()}</p>
-                </div>
-                <div class="text-right">
-                    <p class="text-[9px] uppercase font-black opacity-50 tracking-widest">黑星點數</p>
-                    <p class="text-xl font-black mt-1 text-red-400">${state.blackStars + state.smallBlackStars}</p>
-                </div>
+                <div><p class="text-[9px] font-black opacity-50 tracking-widest uppercase">總花費累計</p><p class="text-2xl font-black mt-1">$${(sumB+sumS).toLocaleString()}</p></div>
+                <div class="text-right"><p class="text-[9px] font-black opacity-50 tracking-widest uppercase">黑星次數</p><p class="text-xl font-black mt-1 text-red-400">${state.blackStars + state.smallBlackStars}</p></div>
             </div>`;
     }
 
@@ -652,20 +634,16 @@
             bodyBg.style.transform = `scale(${bb.sc / 100})`;
         }
         
-        const defaultHero = "https://lh3.googleusercontent.com/aida-public/AB6AXuDWU3YWOZtS24ARubGFDrBICBqnQoQnKy56zBFXnoMi5tq5qGReqMy4ZOJYI7tldo3VNAyB1R78qQR71ZKQb6BGilN5xOoaXRYsDs3BjrJSxmS2DrjFRZ0j-fQAQ3RjL1dfpPr17X-9ysHPYeM6gHw1tjkv1rsZYb7URKyjWAvSqycJ-bG3XMM98GdEpg2fGUtOghg0n1Lrq5DnbUJPcy8A23bEs-MM4iBCKoWRw0pAKl1EIZP6VnNIx7VA6DYcvxZMlf90RU-X4h4";
+        const defH = "https://lh3.googleusercontent.com/aida-public/AB6AXuDWU3YWOZtS24ARubGFDrBICBqnQoQnKy56zBFXnoMi5tq5qGReqMy4ZOJYI7tldo3VNAyB1R78qQR71ZKQb6BGilN5xOoaXRYsDs3BjrJSxmS2DrjFRZ0j-fQAQ3RjL1dfpPr17X-9ysHPYeM6gHw1tjkv1rsZYb7URKyjWAvSqycJ-bG3XMM98GdEpg2fGUtOghg0n1Lrq5DnbUJPcy8A23bEs-MM4iBCKoWRw0pAKl1EIZP6VnNIx7VA6DYcvxZMlf90RU-X4h4";
         
         if(hBig) {
-            hBig.style.backgroundImage = b.img ? `url("${b.img}")` : `url("${defaultHero}")`;
-            hBig.style.opacity = b.op/100; 
-            hBig.style.backgroundSize = `${b.sc}%`; 
-            hBig.style.backgroundPositionY = `${b.y}%`;
+            hBig.style.backgroundImage = b.img ? `url("${b.img}")` : `url("${defH}")`;
+            hBig.style.opacity = b.op/100; hBig.style.backgroundSize = `${b.sc}%`; hBig.style.backgroundPositionY = `${b.y}%`;
         }
         
         if(hSmall) {
-            hSmall.style.backgroundImage = s.img ? `url("${s.img}")` : `url("${defaultHero}")`;
-            hSmall.style.opacity = s.op/100; 
-            hSmall.style.backgroundSize = `${s.sc}%`; 
-            hSmall.style.backgroundPositionY = `${s.y}%`;
+            hSmall.style.backgroundImage = s.img ? `url("${s.img}")` : `url("${defH}")`;
+            hSmall.style.opacity = s.op/100; hSmall.style.backgroundSize = `${s.sc}%`; hSmall.style.backgroundPositionY = `${s.y}%`;
         }
         
         const mPrev = document.getElementById('motivation-img-preview');
@@ -710,7 +688,7 @@
                 const vOp = document.getElementById(`val-${p}-op`), vSc = document.getElementById(`val-${p}-sc`), vY = document.getElementById(`val-${p}-y`);
                 if(vOp) vOp.innerText = c.op; if(vSc) vSc.innerText = c.sc; if(vY) vY.innerText = c.y;
             };
-            upd('hb', state.theme.heroBig); upd('hs', state.theme.heroSmall);
+            upd('hb', state.theme.heroBig);
             const bo = document.getElementById('set-body-op'), bs = document.getElementById('set-body-sc');
             if(bo) bo.value = state.theme.bodyBg.op; if(bs) bs.value = state.theme.bodyBg.sc;
             const bOpt = document.getElementById('set-big-opts'), sOpt = document.getElementById('set-small-opts');
